@@ -1,6 +1,7 @@
-from qset_core.configuration.config_manager import ConfigManager
-from qset_core.configuration.environment import Environment
+from qset_core.configuration import ConfigManager, Environment
 import pytest
+import logging
+import os
 
 
 def test_constructor_with_ctor_param():
@@ -33,7 +34,25 @@ def test_get_priority_paths():
     with pytest.raises(TypeError):
         instance.get_priority_paths()
 
-    priority_paths = instance.get_priority_paths("logging")
+    priority_paths = instance.get_priority_paths("config.logging")
 
     assert priority_paths is not None
-    assert len(priority_paths) == 2
+    assert isinstance(priority_paths, list)
+
+
+def test_get_priority_paths_exist():
+    priority_paths = ConfigManager.get_default().get_priority_paths("config.logging")
+
+    assert len(priority_paths) >= 1, "The default logging configuration file MUST be present."
+
+    for path in priority_paths:
+        assert isinstance(path, str)
+        assert os.path.exists(path)
+
+
+def test_create_logger():
+    instance = ConfigManager.get_default()
+    logger = instance.create_logger("unit_test")
+
+    assert logger is not None
+    assert isinstance(logger, logging.Logger)
