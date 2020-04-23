@@ -1,3 +1,4 @@
 
 pytest==5.4.1
 HiYaPyCo==0.4.16
+versioneer==0.18
